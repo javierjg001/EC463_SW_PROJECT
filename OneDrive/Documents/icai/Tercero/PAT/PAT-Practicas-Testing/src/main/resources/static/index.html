@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h1>Proceso de carga de datos</h1>
+        <p>
+            El proceso de carga necesita necesita de los siguientes datos:
+        </p>
+        <form method="post"
+              action="/api/v1/process-step1-legacy"
+              enctype="application/x-www-form-urlencoded"
+              onsubmit="return sendProcessStep1(event);">
+            <fieldset>
+                <legend>Process Data:</legend>
+                <label for="fullName">Nombre completo:</label>
+                <input type="text" id="fullName" name="fullName" /><br>
+                <label for="dni">DNI:</label>
+                <input type="text" id="dni" name="dni" /><br>
+                <label for="telefono">Teléfono móvil:</label>
+                <input type="text" id="telefono" name="telefono" /><br>
+                <input type="submit">
+            </fieldset>
+        </form>
+        <div id="feedback">
+
+        </div>
+
+        <script>
+            function sendProcessStep1(event) {
+                // Evitar que se envie el form
+                event.preventDefault();
+
+                var fullName = document.getElementById("fullName").value;
+                var dni = document.getElementById("dni").value;
+                var telefono = document.getElementById("telefono").value;
+
+                const data = { fullName: fullName, dni: dni, telefono : telefono };
+                const address = '/api/v1/process-step1';
+                fetch(address, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                    })
+                    .then((response) => {
+                      if (response.ok) {
+                        return response.json();
+                      }
+                      throw new Error('Something went wrong');
+                    })
+                    .then(data => {
+                        console.log(data);
+
+                        if(data.result === "OK") {
+                            document.getElementById("feedback").innerHTML = "<h1>Muchas gracias por enviar los datos. FETCH</h1><a href='javascript:location.reload()'>Recargar</a>";
+                        } else {
+                            document.getElementById("feedback").innerHTML = "<h1>Hemos tenido un problema con su solicitud.</h1><p>Revise los datos introducidos</p>";
+                        }
+
+                        console.log("Done");
+                    })
+                    .catch(error => console.error(error));
+            };
+        </script>
+    </body>
+</html>
