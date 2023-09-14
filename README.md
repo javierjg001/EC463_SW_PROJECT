@@ -1,4 +1,4 @@
-# EC463_SW_project
+# EC463_SW_PROJECT
 Mini project for ENG EC 463
 
 1. create firebase
