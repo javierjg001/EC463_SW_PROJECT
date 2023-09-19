@@ -5,7 +5,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
-import { useAuthState, useSignInWithGoogle } from 'react-firebase-hooks/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 firebase.initializeApp({
@@ -21,27 +21,30 @@ firebase.initializeApp({
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 
-const [user] = useAuthState();
-
 function App() {
+
+  const [user] = useAuthState(auth);
+
   return (
     <div className="App">
       <header className="App-header">
       </header>
-
       <section>
-        {user ? <Chatroom/> : <SignIn/>} 
+        {user ? <ChatRoom /> : <SignIn />}
       </section>
     </div>
   );
 }
 
 function SignIn(){
-  const useSignInWithGoogle = () => new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider);
+
+  const signInWithGoogle = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  }
 
   return(
-    <button onClick={useSignInWithGoogle}>Sign in with Google</button>
+    <button onClick={signInWithGoogle}>Sign in with Google</button>
   )
 }
 
@@ -50,5 +53,13 @@ function SignOut() {
     <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
   )
 }
+
+function ChatRoom(){
+  const messageRef = firestore.collection('messages');
+  const query = messageRef.orderBy('createdAt').limit(25);
+
+  const [messages] = useCollectionData(query);
+}
+
 
 export default App;
